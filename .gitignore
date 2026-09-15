@@ -1,0 +1,25 @@
+# Build output
+*.exe
+*.o
+*.a
+*.out
+
+# Dev-C++ project files
+*.dev
+*.layout
+*.res
+*.rc
+
+# Code::Blocks
+*.cbp
+*.depend
+*.layout
+
+# Visual Studio
+.vs/
+*.vcxproj
+*.sln
+
+# Misc
+Thumbs.db
+Desktop.ini
