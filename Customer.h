@@ -3,18 +3,38 @@
 #include <fstream>
 
 // format: id|name|phone|address
-struct Customer {
-    int    id      = 0;
+class Customer {
+private:
+    int    id;
     string name;
     string phone;
     string address;
 
+public:
+    // --- constructor ---
+    Customer() : id(0) {}
+    Customer(int id, const string& name, const string& phone, const string& address)
+        : id(id), name(name), phone(phone), address(address) {}
+
+    // --- getter ---
+    int           getId()      const { return id;      }
+    const string& getName()    const { return name;    }
+    const string& getPhone()   const { return phone;   }
+    const string& getAddress() const { return address; }
+
+    // --- setter ---
+    void setId(int i)              { id      = i; }
+    void setName(const string& n)  { name    = n; }
+    void setPhone(const string& p) { phone   = p; }
+    void setAddress(const string& a){ address = a; }
+
+    // --- serialize ---
     string toLine() const {
         return to_string(id) + "|" + name + "|" + phone + "|" + address;
     }
 
     static Customer fromLine(const string& line) {
-        auto f = split(line, '|');
+        vector<string> f = split(line, '|');
         Customer c;
         c.id      = stoi(f[0]);
         c.name    = f[1];
@@ -23,6 +43,7 @@ struct Customer {
         return c;
     }
 
+    // --- file ---
     static vector<Customer> load(const string& path) {
         vector<Customer> v;
         ifstream f(path);
@@ -34,6 +55,7 @@ struct Customer {
 
     static void save(const string& path, const vector<Customer>& v) {
         ofstream f(path);
-        for (auto& c : v) f << c.toLine() << "\n";
+        for (int i = 0; i < (int)v.size(); i++)
+            f << v[i].toLine() << "\n";
     }
 };

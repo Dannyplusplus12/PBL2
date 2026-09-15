@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iostream>
 #include <algorithm>
+#include <cstdlib>
 using namespace std;
 
 // tach chuoi theo ky tu phan cach
@@ -15,11 +16,12 @@ inline vector<string> split(const string& s, char d) {
     return v;
 }
 
-// id ke tiep (max + 1), yeu cau T co truong .id
+// id ke tiep (max + 1), yeu cau T co phuong thuc getId()
 template<typename T>
 int nextId(const vector<T>& v) {
     int mx = 0;
-    for (auto& x : v) if (x.id > mx) mx = x.id;
+    for (int i = 0; i < (int)v.size(); i++)
+        if (v[i].getId() > mx) mx = v[i].getId();
     return mx + 1;
 }
 

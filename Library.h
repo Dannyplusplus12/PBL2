@@ -20,7 +20,7 @@ public:
     vector<Book>     books;
     vector<Borrow>   borrows;
 
-    // --- load / save ---
+    // --- load ---
     void load() {
         authors   = Author::load(PATH_AUTHOR);
         genres    = Genre::load(PATH_GENRE);
@@ -30,80 +30,125 @@ public:
     }
 
     // --- tim theo id ---
-    Author*   findAuthor  (int id) { for (auto& x : authors)   if (x.id == id) return &x; return nullptr; }
-    Genre*    findGenre   (int id) { for (auto& x : genres)    if (x.id == id) return &x; return nullptr; }
-    Customer* findCustomer(int id) { for (auto& x : customers) if (x.id == id) return &x; return nullptr; }
-    Book*     findBook    (int id) { for (auto& x : books)     if (x.id == id) return &x; return nullptr; }
-    Borrow*   findBorrow  (int id) { for (auto& x : borrows)   if (x.id == id) return &x; return nullptr; }
+    Author* findAuthor(int id) {
+        for (int i = 0; i < (int)authors.size(); i++)
+            if (authors[i].getId() == id) return &authors[i];
+        return NULL;
+    }
 
-    // so ban con lai cua sach
+    Genre* findGenre(int id) {
+        for (int i = 0; i < (int)genres.size(); i++)
+            if (genres[i].getId() == id) return &genres[i];
+        return NULL;
+    }
+
+    Customer* findCustomer(int id) {
+        for (int i = 0; i < (int)customers.size(); i++)
+            if (customers[i].getId() == id) return &customers[i];
+        return NULL;
+    }
+
+    Book* findBook(int id) {
+        for (int i = 0; i < (int)books.size(); i++)
+            if (books[i].getId() == id) return &books[i];
+        return NULL;
+    }
+
+    Borrow* findBorrow(int id) {
+        for (int i = 0; i < (int)borrows.size(); i++)
+            if (borrows[i].getId() == id) return &borrows[i];
+        return NULL;
+    }
+
+    // so ban con lai
     int available(int bookId) {
         Book* b = findBook(bookId);
         if (!b) return 0;
         int n = 0;
-        for (auto& bw : borrows)
-            if (bw.bookId == bookId && !bw.returned) n++;
-        return b->amount - n;
+        for (int i = 0; i < (int)borrows.size(); i++)
+            if (borrows[i].getBookId() == bookId && !borrows[i].isReturned()) n++;
+        return b->getAmount() - n;
     }
 
-    // muon sach — false neu het ban hoac id khong hop le
+    // muon sach
     bool borrow(int customerId, int bookId,
                 const string& borrowDate, const string& dueDate) {
         if (!findCustomer(customerId) || !findBook(bookId)) return false;
         if (available(bookId) <= 0) return false;
         Borrow bw;
-        bw.id         = nextId(borrows);
-        bw.customerId = customerId;
-        bw.bookId     = bookId;
-        bw.borrowDate = borrowDate;
-        bw.dueDate    = dueDate;
+        bw.setId(nextId(borrows));
+        bw.setCustomerId(customerId);
+        bw.setBookId(bookId);
+        bw.setBorrowDate(borrowDate);
+        bw.setDueDate(dueDate);
         borrows.push_back(bw);
         Borrow::save(PATH_BORROW, borrows);
         return true;
     }
 
-    // tra sach — false neu phieu khong ton tai hoac da tra
+    // tra sach
     bool returnBook(int borrowId, const string& returnDate) {
         Borrow* bw = findBorrow(borrowId);
-        if (!bw || bw->returned) return false;
-        bw->returned   = true;
-        bw->returnDate = returnDate;
+        if (!bw || bw->isReturned()) return false;
+        bw->setReturned(true);
+        bw->setReturnDate(returnDate);
         Borrow::save(PATH_BORROW, borrows);
         return true;
     }
 
     // xoa co kiem tra rang buoc
     bool removeAuthor(int id) {
-        for (auto& b : books) if (b.authorId == id) return false;
-        authors.erase(remove_if(authors.begin(), authors.end(),
-            [id](const Author& a){ return a.id == id; }), authors.end());
-        Author::save(PATH_AUTHOR, authors);
-        return true;
+        for (int i = 0; i < (int)books.size(); i++)
+            if (books[i].getAuthorId() == id) return false;
+        for (int i = 0; i < (int)authors.size(); i++) {
+            if (authors[i].getId() == id) {
+                authors.erase(authors.begin() + i);
+                Author::save(PATH_AUTHOR, authors);
+                return true;
+            }
+        }
+        return false;
     }
 
     bool removeGenre(int id) {
-        for (auto& b : books)
-            if (find(b.genreIds.begin(), b.genreIds.end(), id) != b.genreIds.end())
-                return false;
-        genres.erase(remove_if(genres.begin(), genres.end(),
-            [id](const Genre& g){ return g.id == id; }), genres.end());
-        Genre::save(PATH_GENRE, genres);
-        return true;
+        for (int i = 0; i < (int)books.size(); i++) {
+            const vector<int>& gids = books[i].getGenreIds();
+            for (int j = 0; j < (int)gids.size(); j++)
+                if (gids[j] == id) return false;
+        }
+        for (int i = 0; i < (int)genres.size(); i++) {
+            if (genres[i].getId() == id) {
+                genres.erase(genres.begin() + i);
+                Genre::save(PATH_GENRE, genres);
+                return true;
+            }
+        }
+        return false;
     }
 
     bool removeBook(int id) {
-        for (auto& bw : borrows) if (bw.bookId == id && !bw.returned) return false;
-        books.erase(remove_if(books.begin(), books.end(),
-            [id](const Book& b){ return b.id == id; }), books.end());
-        Book::save(PATH_BOOK, books);
-        return true;
+        for (int i = 0; i < (int)borrows.size(); i++)
+            if (borrows[i].getBookId() == id && !borrows[i].isReturned()) return false;
+        for (int i = 0; i < (int)books.size(); i++) {
+            if (books[i].getId() == id) {
+                books.erase(books.begin() + i);
+                Book::save(PATH_BOOK, books);
+                return true;
+            }
+        }
+        return false;
     }
 
     bool removeCustomer(int id) {
-        for (auto& bw : borrows) if (bw.customerId == id && !bw.returned) return false;
-        customers.erase(remove_if(customers.begin(), customers.end(),
-            [id](const Customer& c){ return c.id == id; }), customers.end());
-        Customer::save(PATH_CUSTOMER, customers);
-        return true;
+        for (int i = 0; i < (int)borrows.size(); i++)
+            if (borrows[i].getCustomerId() == id && !borrows[i].isReturned()) return false;
+        for (int i = 0; i < (int)customers.size(); i++) {
+            if (customers[i].getId() == id) {
+                customers.erase(customers.begin() + i);
+                Customer::save(PATH_CUSTOMER, customers);
+                return true;
+            }
+        }
+        return false;
     }
 };

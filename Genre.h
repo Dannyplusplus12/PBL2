@@ -3,22 +3,36 @@
 #include <fstream>
 
 // format: id|name
-struct Genre {
-    int    id   = 0;
+class Genre {
+private:
+    int    id;
     string name;
 
-    string toLine() const {
-        return to_string(id) + "|" + name;
-    }
+public:
+    // --- constructor ---
+    Genre() : id(0) {}
+    Genre(int id, const string& name) : id(id), name(name) {}
+
+    // --- getter ---
+    int           getId()   const { return id;   }
+    const string& getName() const { return name; }
+
+    // --- setter ---
+    void setId(int i)             { id   = i; }
+    void setName(const string& n) { name = n; }
+
+    // --- serialize ---
+    string toLine() const { return to_string(id) + "|" + name; }
 
     static Genre fromLine(const string& line) {
-        auto f = split(line, '|');
+        vector<string> f = split(line, '|');
         Genre g;
         g.id   = stoi(f[0]);
         g.name = f[1];
         return g;
     }
 
+    // --- file ---
     static vector<Genre> load(const string& path) {
         vector<Genre> v;
         ifstream f(path);
@@ -30,6 +44,7 @@ struct Genre {
 
     static void save(const string& path, const vector<Genre>& v) {
         ofstream f(path);
-        for (auto& g : v) f << g.toLine() << "\n";
+        for (int i = 0; i < (int)v.size(); i++)
+            f << v[i].toLine() << "\n";
     }
 };
