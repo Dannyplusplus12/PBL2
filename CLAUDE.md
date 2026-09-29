@@ -3,8 +3,10 @@
 ## Build
 
 ```bash
-g++ -std=c++11 -o app.exe main.cpp
+g++ -std=c++11 main.cpp -o main.exe
 ```
+
+Hoặc chạy `build.bat` cho tiện.
 
 ## Cấu trúc file
 
@@ -12,11 +14,12 @@ g++ -std=c++11 -o app.exe main.cpp
 PBL2/
 ├── main.cpp        # entry point + toàn bộ console UI
 ├── Library.h       # class Library: load/find/borrow/return/remove
-├── Author.h        # struct Author   (id, name)
-├── Genre.h         # struct Genre    (id, name)
-├── Customer.h      # struct Customer (id, name, phone, address)
-├── Book.h          # struct Book     (id, name, authorId, amount, genreIds)
-├── Borrow.h        # struct Borrow   (id, customerId, bookId, dates, returned)
+├── Entity.h        # class Entity: base (id, name) + virtual toLine()
+├── Author.h        # Author   : Entity (id, name)
+├── Genre.h         # Genre    : Entity (id, name)
+├── Customer.h      # Customer : Entity (id, name, phone, address)
+├── Book.h          # Book     : Entity (id, name, authorId, amount, genreIds)
+├── Borrow.h        # Borrow            (id, customerId, bookId, dates, returned)
 ├── utils.h         # split, nextId, getStr, getInt, clr, pause, header
 └── Data/
     ├── Author.dat
@@ -30,7 +33,8 @@ PBL2/
 
 Một tầng duy nhất — không có Repository hay Service layer:
 
-- Mỗi struct tự đảm nhiệm serialize/deserialize (`toLine` / `fromLine`) và đọc/ghi file (`load` / `save`).
+- `Author`, `Genre`, `Customer`, `Book` kế thừa từ `Entity` (chứa `id` + `name`). `Borrow` là bản ghi mượn/trả nên đứng độc lập.
+- Mỗi class tự đảm nhiệm serialize/deserialize (`toLine` / `fromLine`) và đọc/ghi file (`load` / `save`).
 - `Library` gom tất cả vector dữ liệu, xử lý logic nghiệp vụ liên bảng (kiểm tra ràng buộc khi xóa, tính số bản còn lại, mượn/trả sách).
 - `main.cpp` chứa vòng lặp menu và tất cả hàm UI.
 

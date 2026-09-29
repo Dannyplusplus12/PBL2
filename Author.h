@@ -1,28 +1,12 @@
 #pragma once
-#include "utils.h"
+#include "Entity.h"
 #include <fstream>
 
 // format: id|name
-class Author {
-private:
-    int    id;
-    string name;
-
+class Author : public Entity {
 public:
-    // --- constructor ---
-    Author() : id(0) {}
-    Author(int id, const string& name) : id(id), name(name) {}
-
-    // --- getter ---
-    int           getId()   const { return id;   }
-    const string& getName() const { return name; }
-
-    // --- setter ---
-    void setId(int i)             { id   = i; }
-    void setName(const string& n) { name = n; }
-
-    // --- serialize ---
-    string toLine() const { return to_string(id) + "|" + name; }
+    Author() {}
+    Author(int id, const string& name) : Entity(id, name) {}
 
     static Author fromLine(const string& line) {
         vector<string> f = split(line, '|');
@@ -32,7 +16,6 @@ public:
         return a;
     }
 
-    // --- file ---
     static vector<Author> load(const string& path) {
         vector<Author> v;
         ifstream f(path);

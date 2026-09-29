@@ -1,28 +1,12 @@
 #pragma once
-#include "utils.h"
+#include "Entity.h"
 #include <fstream>
 
 // format: id|name
-class Genre {
-private:
-    int    id;
-    string name;
-
+class Genre : public Entity {
 public:
-    // --- constructor ---
-    Genre() : id(0) {}
-    Genre(int id, const string& name) : id(id), name(name) {}
-
-    // --- getter ---
-    int           getId()   const { return id;   }
-    const string& getName() const { return name; }
-
-    // --- setter ---
-    void setId(int i)             { id   = i; }
-    void setName(const string& n) { name = n; }
-
-    // --- serialize ---
-    string toLine() const { return to_string(id) + "|" + name; }
+    Genre() {}
+    Genre(int id, const string& name) : Entity(id, name) {}
 
     static Genre fromLine(const string& line) {
         vector<string> f = split(line, '|');
@@ -32,7 +16,6 @@ public:
         return g;
     }
 
-    // --- file ---
     static vector<Genre> load(const string& path) {
         vector<Genre> v;
         ifstream f(path);
