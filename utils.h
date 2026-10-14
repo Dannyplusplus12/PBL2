@@ -5,6 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cstdlib>
+#include <cctype>
 using namespace std;
 
 // tach chuoi theo ky tu phan cach
@@ -55,4 +56,28 @@ inline void pause() {
 // in tieu de section
 inline void header(const string& t) {
     cout << "\n=== " << t << " ===\n";
+}
+
+//bỏ khoảng trắng
+inline string trim(const string& s) {
+    size_t a = s.find_first_not_of(" \t\r\n");
+    if (a == string::npos) return "";
+    size_t b = s.find_last_not_of(" \t\r\n");
+    return s.substr(a, b - a + 1);
+}
+
+//chuẩn hóa tên
+inline string normalize(const string& s) {
+    string t = trim(s), r;
+    bool prevSpace = false;
+    for (size_t i = 0; i < t.size(); i++) {
+        if (t[i] == ' ') {
+            if (!prevSpace) r += ' ';
+            prevSpace = true;
+        } else {
+            r += (char)tolower((unsigned char)t[i]);
+            prevSpace = false;
+        }
+    }
+    return r;
 }

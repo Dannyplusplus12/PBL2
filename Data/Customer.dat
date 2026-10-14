@@ -1,8 +1,20 @@
-1|Tran Van An|0819869457|100 Nguyen Trai, Ho Chi Minh
-2|Le Thi Binh|0304385548|12 Vo Van Kiet, Ho Chi Minh
-3|Pham Van Cuong|0668907804|60 Dien Bien Phu, Ho Chi Minh
-4|Hoang Thi Dung|0421387030|77 Bach Dang, Da Nang
-5|Vu Van Em|0678424178|9 Ly Thuong Kiet, Ha Noi
-6|Nguyen Thi Phuong|0932156789|45 Tran Phu, Hue
-7|Do Manh Hung|0956234101|22 Nguyen Van Cu, Can Tho
-8|Bui Thi Lan|0912876543|33 Le Duan, Bien Hoa
+1|Tran Van An|0819869457|100 Nguyen Trai, Ho Chi Minh|0
+2|Le Thi Binh|0304385548|12 Vo Van Kiet, Ho Chi Minh|1
+3|Pham Van Cuong|0668907804|60 Dien Bien Phu, Ho Chi Minh|0
+4|Hoang Thi Dung|0421387030|77 Bach Dang, Da Nang|0
+5|Vu Van Em|0678424178|9 Ly Thuong Kiet, Ha Noi|1
+6|Do Thi Phuong|0482752847|18 Nguyen Hoang, Ha Noi|0
+7|Bui Van Giang|0536115866|100 Nguyen Trai, Ho Chi Minh|1
+8|Dang Thi Hoa|0470535066|18 Nguyen Hoang, Ha Noi|1
+9|Ngo Van Inh|0964713104|60 Dien Bien Phu, Ho Chi Minh|1
+10|Duong Thi Kim|0767910162|9 Ly Thuong Kiet, Ha Noi|0
+11|Ly Van Long|0540550294|18 Nguyen Hoang, Ha Noi|0
+12|Trinh Thi Mai|0309937124|45 Hai Ba Trung, Ha Noi|0
+13|Phan Van Nam|0949480082|5 Tran Phu, Hue|0
+14|Ta Thi Oanh|0958732335|12 Vo Van Kiet, Ho Chi Minh|1
+15|Chu Van Phu|0305603602|12 Vo Van Kiet, Ho Chi Minh|0
+16|Vuong Thi Quyen|0936687221|9 Ly Thuong Kiet, Ha Noi|0
+17|Luu Van Son|0802797829|5 Tran Phu, Hue|0
+18|Mai Thi Thu|0541864535|5 Tran Phu, Hue|1
+19|Dinh Van Uy|0924249768|45 Hai Ba Trung, Ha Noi|0
+20|Cao Thi Van|0933834479|9 Ly Thuong Kiet, Ha Noi|0

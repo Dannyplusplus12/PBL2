@@ -4,6 +4,9 @@
 #include "Customer.h"
 #include "Book.h"
 #include "Borrow.h"
+#include "DateUtils.h"
+
+using namespace DateUtils;
 
 // duong dan file du lieu
 const string PATH_AUTHOR   = "Data/Author.dat";
@@ -70,17 +73,68 @@ public:
         return b->getAmount() - n;
     }
 
+    // kiểm tra số lượng sách / 1 khách đã mượn
+    bool canBorrow (int customerId) {
+        int cnt = 0;
+        for (const auto& b : borrows) {
+            if (b.getCustomerId() == customerId && !b.isReturned())
+                cnt++;
+        }
+        return cnt < 5;
+    }
+
+    // khóa customer 
+    bool lockCustomer (int customerId) {
+        Customer* c = findCustomer(customerId);
+        if (!c) return false;
+        c->setLock(true);
+        Customer::save(PATH_CUSTOMER, customers);
+        return true; 
+    }
+
+    // mở khóa customer
+    bool unlockCustomer (int customerId) {
+        Customer* c = findCustomer(customerId);
+        if (!c) return false;
+        c->setLock(false);
+        Customer::save(PATH_CUSTOMER, customers);
+        return true; 
+    }
+
+    bool lockOverdue(int customerId) {
+        Customer* customer = findCustomer(customerId);
+        if (!customer)
+            return false;
+
+        for (auto& borrow : borrows)
+        {
+            if (borrow.getCustomerId() == customerId && !borrow.isReturned()
+                && overdueDays(borrow.getDueDate()) > 5)
+            {
+                customer->setLock(true);
+                Customer::save(PATH_CUSTOMER, customers);
+                return true;
+            }
+        }
+        return false;
+    }
+
     // muon sach
-    bool borrow(int customerId, int bookId,
-                const string& borrowDate, const string& dueDate) {
-        if (!findCustomer(customerId) || !findBook(bookId)) return false;
+    bool borrow(int customerId, int bookId, int daysBorrowed) {
+        Customer* c = findCustomer(customerId);
+        if (!c || c->isLocked()) return false;
+        if (!findBook(bookId)) return false;
         if (available(bookId) <= 0) return false;
+        if (daysBorrowed <= 0 || daysBorrowed > 60) return false;
+        if (!canBorrow(customerId)) return false;
+
         Borrow bw;
         bw.setId(nextId(borrows));
         bw.setCustomerId(customerId);
         bw.setBookId(bookId);
+        const string borrowDate = today();
         bw.setBorrowDate(borrowDate);
-        bw.setDueDate(dueDate);
+        bw.setDueDate(addDays(borrowDate, daysBorrowed));
         borrows.push_back(bw);
         Borrow::save(PATH_BORROW, borrows);
         return true;
@@ -92,6 +146,23 @@ public:
         if (!bw || bw->isReturned()) return false;
         bw->setReturned(true);
         bw->setReturnDate(returnDate);
+        Borrow::save(PATH_BORROW, borrows);
+        return true;
+    }
+
+    // gia hạn mượn
+    bool Renew (int borrowId, int extraDay) {
+        Borrow* b = findBorrow(borrowId);
+        if (!b || b->isReturned()) return false;
+        if (extraDay <= 0) return false;
+        if (b->getRenewCount() >= 1) return false;
+
+        Customer* c = findCustomer(b->getCustomerId());
+        if (!c || c->isLocked()) return false;
+        if (overdueDays(b->getDueDate()) > 5) return false;
+
+        b->setDueDate(addDays(b->getDueDate(), extraDay));
+        b->setRenewCount(b->getRenewCount() + 1);
         Borrow::save(PATH_BORROW, borrows);
         return true;
     }
@@ -149,6 +220,31 @@ public:
                 return true;
             }
         }
+        return false;
+    }
+
+    //kiểm tra đã tồn tại chưa khi add mới
+    bool authorExists(const string& name, int excludeId = 0) {
+        string n = normalize(name);
+        for (int i = 0; i < (int)authors.size(); i++)
+            if (authors[i].getId() != excludeId && normalize(authors[i].getName()) == n)
+                return true;
+        return false;
+    }
+
+    bool genreExists(const string& name, int excludeId = 0) {
+        string n = normalize(name);
+        for (int i = 0; i < (int)genres.size(); i++)
+            if (genres[i].getId() != excludeId && normalize(genres[i].getName()) == n)
+                return true;
+        return false;
+    }
+
+    bool bookExists(const string& name, int authorId, int excludeId = 0) {
+        string n = normalize(name);
+        for (int i = 0; i < (int)books.size(); i++)
+            if (books[i].getId() != excludeId && books[i].getAuthorId() == authorId && normalize(books[i].getName()) == n)
+                return true;
         return false;
     }
 };

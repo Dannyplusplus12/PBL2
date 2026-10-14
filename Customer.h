@@ -2,25 +2,28 @@
 #include "Entity.h"
 #include <fstream>
 
-// format: id|name|phone|address
+// format: id|name|phone|address|lock
 class Customer : public Entity {
 private:
     string phone;
     string address;
+    bool lock;
 
 public:
-    Customer() {}
+    Customer(): lock(false) {}
     Customer(int id, const string& name, const string& phone, const string& address)
-        : Entity(id, name), phone(phone), address(address) {}
+        : Entity(id, name), phone(phone), address(address), lock(false) {}
 
     const string& getPhone()   const { return phone;   }
     const string& getAddress() const { return address; }
+    bool          isLocked()   const { return lock;    }
 
     void setPhone(const string& p)   { phone   = p; }
     void setAddress(const string& a) { address = a; }
+    void setLock(bool l)             { lock = l;    }
 
     string toLine() const override {
-        return Entity::toLine() + "|" + phone + "|" + address;
+        return Entity::toLine() + "|" + phone + "|" + address + "|" + (lock ? "1" : "0");
     }
 
     static Customer fromLine(const string& line) {
@@ -30,6 +33,7 @@ public:
         c.name    = f[1];
         c.phone   = f.size() > 2 ? f[2] : "";
         c.address = f.size() > 3 ? f[3] : "";
+        c.lock = f.size() > 4 ? stoi(f[4]) : 0;
         return c;
     }
 

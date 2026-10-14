@@ -2,7 +2,7 @@
 #include "utils.h"
 #include <fstream>
 
-// format: id|customerId|bookId|borrowDate|dueDate|returnDate|returned(0/1)
+// format: id|customerId|bookId|borrowDate|dueDate|returnDate|returned(0/1)|renewCount(0/1)
 class Borrow {
 private:
     int    id;
@@ -12,10 +12,11 @@ private:
     string dueDate;
     string returnDate;   // trong neu chua tra
     bool   returned;
+    int    renewCount;
 
 public:
     // --- constructor ---
-    Borrow() : id(0), customerId(0), bookId(0), returned(false) {}
+    Borrow() : id(0), customerId(0), bookId(0), returned(false), renewCount(0) {}
 
     // --- getter ---
     int           getId()         const { return id;         }
@@ -25,6 +26,7 @@ public:
     const string& getDueDate()    const { return dueDate;    }
     const string& getReturnDate() const { return returnDate; }
     bool          isReturned()    const { return returned;   }
+    int           getRenewCount() const { return renewCount; }
 
     // --- setter ---
     void setId(int i)                   { id         = i; }
@@ -34,6 +36,7 @@ public:
     void setDueDate(const string& d)    { dueDate    = d; }
     void setReturnDate(const string& d) { returnDate = d; }
     void setReturned(bool r)            { returned   = r; }
+    void setRenewCount (int rnC)        { renewCount = rnC; }
 
     // --- serialize ---
     string toLine() const {
@@ -43,7 +46,8 @@ public:
              + borrowDate            + "|"
              + dueDate               + "|"
              + returnDate            + "|"
-             + (returned ? "1" : "0");
+             + (returned ? "1" : "0")+ "|"
+             + to_string(renewCount);
     }
 
     static Borrow fromLine(const string& line) {
@@ -56,6 +60,7 @@ public:
         b.dueDate    = f[4];
         b.returnDate = f.size() > 5 ? f[5] : "";
         b.returned   = f.size() > 6 && f[6] == "1";
+        b.renewCount = (f.size() > 7) ? stoi(f[7]) : 0;
         return b;
     }
 
