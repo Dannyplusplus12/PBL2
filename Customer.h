@@ -27,7 +27,7 @@ public:
     }
 
     static Customer fromLine(const string& line) {
-        vector<string> f = split(line, '|');
+        List<string> f = split(line, '|');
         Customer c;
         c.id      = stoi(f[0]);
         c.name    = f[1];
@@ -37,8 +37,8 @@ public:
         return c;
     }
 
-    static vector<Customer> load(const string& path) {
-        vector<Customer> v;
+    static List<Customer> load(const string& path) {
+        List<Customer> v;
         ifstream f(path);
         string line;
         while (getline(f, line))
@@ -46,7 +46,7 @@ public:
         return v;
     }
 
-    static void save(const string& path, const vector<Customer>& v) {
+    static void save(const string& path, const List<Customer>& v) {
         ofstream f(path);
         for (int i = 0; i < (int)v.size(); i++)
             f << v[i].toLine() << "\n";

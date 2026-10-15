@@ -9,15 +9,15 @@ public:
     Genre(int id, const string& name) : Entity(id, name) {}
 
     static Genre fromLine(const string& line) {
-        vector<string> f = split(line, '|');
+        List<string> f = split(line, '|');
         Genre g;
         g.id   = stoi(f[0]);
         g.name = f[1];
         return g;
     }
 
-    static vector<Genre> load(const string& path) {
-        vector<Genre> v;
+    static List<Genre> load(const string& path) {
+        List<Genre> v;
         ifstream f(path);
         string line;
         while (getline(f, line))
@@ -25,7 +25,7 @@ public:
         return v;
     }
 
-    static void save(const string& path, const vector<Genre>& v) {
+    static void save(const string& path, const List<Genre>& v) {
         ofstream f(path);
         for (int i = 0; i < (int)v.size(); i++)
             f << v[i].toLine() << "\n";

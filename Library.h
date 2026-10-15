@@ -17,11 +17,11 @@ const string PATH_BORROW   = "Data/Borrow.dat";
 
 class Library {
 public:
-    vector<Author>   authors;
-    vector<Genre>    genres;
-    vector<Customer> customers;
-    vector<Book>     books;
-    vector<Borrow>   borrows;
+    List<Author>   authors;
+    List<Genre>    genres;
+    List<Customer> customers;
+    List<Book>     books;
+    List<Borrow>   borrows;
 
     // --- load ---
     void load() {
@@ -76,8 +76,8 @@ public:
     // kiểm tra số lượng sách / 1 khách đã mượn
     bool canBorrow (int customerId) {
         int cnt = 0;
-        for (const auto& b : borrows) {
-            if (b.getCustomerId() == customerId && !b.isReturned())
+        for (int i = 0; i < (int)borrows.size(); i++) {
+            if (borrows[i].getCustomerId() == customerId && !borrows[i].isReturned())
                 cnt++;
         }
         return cnt < 5;
@@ -106,10 +106,10 @@ public:
         if (!customer)
             return false;
 
-        for (auto& borrow : borrows)
+        for (int i = 0; i < (int)borrows.size(); i++)
         {
-            if (borrow.getCustomerId() == customerId && !borrow.isReturned()
-                && overdueDays(borrow.getDueDate()) > 5)
+            if (borrows[i].getCustomerId() == customerId && !borrows[i].isReturned()
+                && overdueDays(borrows[i].getDueDate()) > 5)
             {
                 customer->setLock(true);
                 Customer::save(PATH_CUSTOMER, customers);
@@ -173,7 +173,7 @@ public:
             if (books[i].getAuthorId() == id) return false;
         for (int i = 0; i < (int)authors.size(); i++) {
             if (authors[i].getId() == id) {
-                authors.erase(authors.begin() + i);
+                authors.erase(i);
                 Author::save(PATH_AUTHOR, authors);
                 return true;
             }
@@ -183,13 +183,13 @@ public:
 
     bool removeGenre(int id) {
         for (int i = 0; i < (int)books.size(); i++) {
-            const vector<int>& gids = books[i].getGenreIds();
+            const List<int>& gids = books[i].getGenreIds();
             for (int j = 0; j < (int)gids.size(); j++)
                 if (gids[j] == id) return false;
         }
         for (int i = 0; i < (int)genres.size(); i++) {
             if (genres[i].getId() == id) {
-                genres.erase(genres.begin() + i);
+                genres.erase(i);
                 Genre::save(PATH_GENRE, genres);
                 return true;
             }
@@ -202,7 +202,7 @@ public:
             if (borrows[i].getBookId() == id && !borrows[i].isReturned()) return false;
         for (int i = 0; i < (int)books.size(); i++) {
             if (books[i].getId() == id) {
-                books.erase(books.begin() + i);
+                books.erase(i);
                 Book::save(PATH_BOOK, books);
                 return true;
             }
@@ -215,7 +215,7 @@ public:
             if (borrows[i].getCustomerId() == id && !borrows[i].isReturned()) return false;
         for (int i = 0; i < (int)customers.size(); i++) {
             if (customers[i].getId() == id) {
-                customers.erase(customers.begin() + i);
+                customers.erase(i);
                 Customer::save(PATH_CUSTOMER, customers);
                 return true;
             }

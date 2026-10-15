@@ -1,7 +1,6 @@
 #pragma once
 #include <chrono>
 #include <string>
-#include <sstream>
 
 using namespace std;
 
@@ -9,32 +8,48 @@ namespace DateUtils
 {
     using namespace std::chrono;
 
+    // doc 1 so nguyen tu vi tri pos (bo qua ky tu khong phai so o dau)
+    inline int readInt(const string& s, size_t& pos)
+    {
+        while (pos < s.size() && (s[pos] < '0' || s[pos] > '9')) pos++;
+        int v = 0;
+        while (pos < s.size() && s[pos] >= '0' && s[pos] <= '9')
+        {
+            v = v * 10 + (s[pos] - '0');
+            pos++;
+        }
+        return v;
+    }
+
+    // so co 2 chu so: 5 -> "05"
+    inline string twoDigits(unsigned v)
+    {
+        return v < 10 ? "0" + to_string(v) : to_string(v);
+    }
+
+    // ngay -> chuoi YYYY-MM-DD
+    inline string formatDate(const year_month_day& ymd)
+    {
+        return to_string(int(ymd.year())) + "-"
+             + twoDigits(unsigned(ymd.month())) + "-"
+             + twoDigits(unsigned(ymd.day()));
+    }
+
     inline sys_days parseDate(const string& date)
     {
-        int y, m, d;
-        char dash;
-
-        stringstream ss(date);
-        ss >> y >> dash >> m >> dash >> d;
+        size_t pos = 0;
+        int y = readInt(date, pos);
+        int m = readInt(date, pos);
+        int d = readInt(date, pos);
 
         return year(y) / month(m) / day(d);
     }
 
+    // ngay hien tai theo gio Viet Nam (UTC+7)
     inline string today()
     {
         auto now = floor<days>(system_clock::now() + hours(7));
-        year_month_day ymd{now};
-
-        stringstream ss;
-        ss << int(ymd.year()) << "-";
-
-        if (unsigned(ymd.month()) < 10) ss << "0";
-        ss << unsigned(ymd.month()) << "-";
-
-        if (unsigned(ymd.day()) < 10) ss << "0";
-        ss << unsigned(ymd.day());
-
-        return ss.str();
+        return formatDate(year_month_day{now});
     }
 
     inline int daysBetween(const string& d1,
@@ -68,18 +83,6 @@ namespace DateUtils
         auto datePoint =
             parseDate(date) + days(daysToAdd);
 
-        year_month_day ymd{datePoint};
-
-        stringstream ss;
-
-        ss << int(ymd.year()) << "-";
-
-        if (unsigned(ymd.month()) < 10) ss << "0";
-        ss << unsigned(ymd.month()) << "-";
-
-        if (unsigned(ymd.day()) < 10) ss << "0";
-        ss << unsigned(ymd.day());
-
-        return ss.str();
+        return formatDate(year_month_day{datePoint});
     }
 }

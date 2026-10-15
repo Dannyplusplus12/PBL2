@@ -51,7 +51,7 @@ public:
     }
 
     static Borrow fromLine(const string& line) {
-        vector<string> f = split(line, '|');
+        List<string> f = split(line, '|');
         Borrow b;
         b.id         = stoi(f[0]);
         b.customerId = stoi(f[1]);
@@ -65,8 +65,8 @@ public:
     }
 
     // --- file ---
-    static vector<Borrow> load(const string& path) {
-        vector<Borrow> v;
+    static List<Borrow> load(const string& path) {
+        List<Borrow> v;
         ifstream f(path);
         string line;
         while (getline(f, line))
@@ -74,7 +74,7 @@ public:
         return v;
     }
 
-    static void save(const string& path, const vector<Borrow>& v) {
+    static void save(const string& path, const List<Borrow>& v) {
         ofstream f(path);
         for (int i = 0; i < (int)v.size(); i++)
             f << v[i].toLine() << "\n";

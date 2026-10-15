@@ -11,7 +11,7 @@ Library lib;
 void printSach(const Book& b) {
     Author* a = lib.findAuthor(b.getAuthorId());
     string gnames;
-    const vector<int>& gids = b.getGenreIds();
+    const List<int>& gids = b.getGenreIds();
     for (int i = 0; i < (int)gids.size(); i++) {
         Genre* g = lib.findGenre(gids[i]);
         if (g) { if (!gnames.empty()) gnames += ", "; gnames += g->getName(); }
@@ -306,8 +306,8 @@ void menuSach() {
             b.setAmount(amount);
 
             string gs = getStr("  ID the loai (cach nhau dau cach, VD: 1 3 7): ");
-            vector<int> gids;
-            vector<string> parts = split(gs, ' ');
+            List<int> gids;
+            List<string> parts = split(gs, ' ');
             for (int i = 0; i < (int)parts.size(); i++)
                 try { if (!parts[i].empty()) gids.push_back(stoi(parts[i])); } catch (...) {}
             b.setGenreIds(gids);
@@ -341,8 +341,8 @@ void menuSach() {
             if (!v.empty()) try { b->setAmount(stoi(v)); } catch (...) {}
             v = getStr("  The loai moi  (VD: 1 3, bo trong = giu nguyen): ");
             if (!v.empty()) {
-                vector<int> gids;
-                vector<string> parts = split(v, ' ');
+                List<int> gids;
+                List<string> parts = split(v, ' ');
                 for (int i = 0; i < (int)parts.size(); i++)
                     try { if (!parts[i].empty()) gids.push_back(stoi(parts[i])); } catch (...) {}
                 b->setGenreIds(gids);
@@ -367,14 +367,12 @@ void menuSach() {
         }
         else if (ch == "5") {
             header("TIM KIEM SACH");
-            string kw = getStr("  Tu khoa: ");
-            transform(kw.begin(), kw.end(), kw.begin(), ::tolower);
+            string kw = normalize(getStr("  Tu khoa: "));
             cout << "\n" << left << setw(5) << "ID" << setw(28) << "Ten sach" << "Tac gia\n";
             cout << string(55, '-') << "\n";
             bool found = false;
             for (int i = 0; i < (int)lib.books.size(); i++) {
-                string bn = lib.books[i].getName();
-                transform(bn.begin(), bn.end(), bn.begin(), ::tolower);
+                string bn = normalize(lib.books[i].getName());
                 if (bn.find(kw) != string::npos) {
                     Author* a = lib.findAuthor(lib.books[i].getAuthorId());
                     cout << setw(5) << lib.books[i].getId()

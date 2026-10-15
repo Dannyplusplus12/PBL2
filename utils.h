@@ -1,25 +1,31 @@
 #pragma once
 #include <string>
-#include <vector>
-#include <sstream>
 #include <iostream>
-#include <algorithm>
 #include <cstdlib>
 #include <cctype>
+#include "List.h"
 using namespace std;
 
 // tach chuoi theo ky tu phan cach
-inline vector<string> split(const string& s, char d) {
-    vector<string> v;
-    stringstream ss(s);
+// (khong tao phan tu rong o cuoi: "a|b|" -> {"a","b"})
+inline List<string> split(const string& s, char d) {
+    List<string> v;
     string t;
-    while (getline(ss, t, d)) v.push_back(t);
+    for (int i = 0; i < (int)s.size(); i++) {
+        if (s[i] == d) {
+            v.push_back(t);
+            t = "";
+        } else {
+            t += s[i];
+        }
+    }
+    if (!t.empty()) v.push_back(t);
     return v;
 }
 
 // id ke tiep (max + 1), yeu cau T co phuong thuc getId()
 template<typename T>
-int nextId(const vector<T>& v) {
+int nextId(const List<T>& v) {
     int mx = 0;
     for (int i = 0; i < (int)v.size(); i++)
         if (v[i].getId() > mx) mx = v[i].getId();
