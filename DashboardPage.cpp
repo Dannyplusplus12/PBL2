@@ -5,6 +5,13 @@ DashboardPage::DashboardPage(QWidget* parent)
     : QWidget(parent), ui(new Ui::DashboardPage) {
     ui->setupUi(this);
 
+    ui->pageTitle->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+
+    ui->cardOverdue->installEventFilter(this);
+    ui->cardOverdueTitle->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui->cardOverdueValue->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui->cardOverdue->setCursor(Qt::PointingHandCursor);
+
     ui->overdueSection->setVisible(false);
     ui->overdueTable->setColumnCount(3);
     ui->overdueTable->setHorizontalHeaderLabels(
@@ -12,9 +19,6 @@ DashboardPage::DashboardPage(QWidget* parent)
     ui->overdueTable->horizontalHeader()->setStretchLastSection(true);
     ui->overdueTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->overdueTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-
-    connect(ui->cardOverdue, &QPushButton::clicked,
-            this, &DashboardPage::onOverdueClicked);
 }
 
 DashboardPage::~DashboardPage() {
@@ -33,6 +37,14 @@ void DashboardPage::onOverdueClicked() {
         refreshOverdueTable();
 }
 
+bool DashboardPage::eventFilter(QObject* watched, QEvent* event) {
+    if (watched == ui->cardOverdue && event->type() == QEvent::MouseButtonPress) {
+        onOverdueClicked();
+        return true;
+    }
+    return QWidget::eventFilter(watched, event);
+}
+
 void DashboardPage::refreshCards() {
     const int totalBooks     = (int)g_lib.books.size();
     const int totalCustomers = (int)g_lib.customers.size();
@@ -47,18 +59,10 @@ void DashboardPage::refreshCards() {
             ++overdue;
     }
 
-    ui->cardBooks->setText(
-        QString("Tổng số sách<br><span style='font-size:26px;font-weight:700;'>%1</span>")
-            .arg(totalBooks));
-    ui->cardCustomers->setText(
-        QString("Khách hàng<br><span style='font-size:26px;font-weight:700;'>%1</span>")
-            .arg(totalCustomers));
-    ui->cardBorrowing->setText(
-        QString("Đang mượn<br><span style='font-size:26px;font-weight:700;'>%1</span>")
-            .arg(active));
-    ui->cardOverdue->setText(
-        QString("Quá hạn<br><span style='font-size:26px;font-weight:700;color:#ef4444;'>%1</span>")
-            .arg(overdue));
+    ui->cardBooksValue->setText(QString::number(totalBooks));
+    ui->cardCustomersValue->setText(QString::number(totalCustomers));
+    ui->cardBorrowingValue->setText(QString::number(active));
+    ui->cardOverdueValue->setText(QString::number(overdue));
 }
 
 void DashboardPage::refreshOverdueTable() {

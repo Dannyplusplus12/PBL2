@@ -10,6 +10,12 @@ BorrowReturnPage::BorrowReturnPage(QWidget* parent)
     : QWidget(parent), ui(new Ui::BorrowReturnPage) {
     ui->setupUi(this);
 
+    ui->pageTitle->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    ui->splitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui->splitter->setChildrenCollapsible(false);
+    ui->borrowTable->setMinimumWidth(0);
+    ui->borrowTable->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
+
     ui->splitter->setStretchFactor(0, 1);
     ui->splitter->setStretchFactor(1, 2);
     ui->splitter->setSizes(QList<int>() << 340 << 680);

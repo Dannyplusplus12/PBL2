@@ -17,7 +17,6 @@ private slots:
     void onAddBookClicked();
     void onEditBookClicked();
     void onDeleteBookClicked();
-    void onStockOutClicked();
 
     void onAuthorSearchChanged(const QString& text);
     void onAddAuthorClicked();

@@ -21,46 +21,54 @@ QLabel#pageTitle {
 
 /* ================= SIDEBAR (bên phải) ================= */
 QListWidget#navList {
-    background: #0f172a;
+    background: #ffffff;
     border: none;
+    border-left: 1px solid #e2e8f0;
     padding: 14px 4px;
     font-size: 15px;
 }
 QListWidget#navList::item {
-    color: #cbd5e1;
+    color: #475569;
     padding: 14px 18px;
     margin: 3px 8px;
     border-radius: 8px;
 }
 QListWidget#navList::item:hover {
-    background: #1e293b;
-    color: #ffffff;
+    background: #f1f5f9;
+    color: #0f172a;
 }
 QListWidget#navList::item:selected {
     background: #2563eb;
     color: #ffffff;
 }
 
+
 /* ================= CARDS (tổng quan) ================= */
-QPushButton#cardBooks, QPushButton#cardCustomers,
-QPushButton#cardBorrowing, QPushButton#cardOverdue {
+QFrame#cardBooks, QFrame#cardCustomers,
+QFrame#cardBorrowing, QFrame#cardOverdue {
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    padding: 16px 18px;
-    text-align: left;
-    color: #334155;
-    font-size: 14px;
 }
-QPushButton#cardBooks:hover, QPushButton#cardCustomers:hover,
-QPushButton#cardBorrowing:hover, QPushButton#cardOverdue:hover {
-    background: #f8fafc;
-}
-QPushButton#cardOverdue {
+QFrame#cardOverdue {
     border-left: 5px solid #ef4444;
 }
-QPushButton#cardOverdue:hover {
+QFrame#cardOverdue:hover {
     background: #fef2f2;
+}
+QLabel#cardBooksTitle, QLabel#cardCustomersTitle,
+QLabel#cardBorrowingTitle, QLabel#cardOverdueTitle {
+    color: #64748b;
+    font-size: 13px;
+}
+QLabel#cardBooksValue, QLabel#cardCustomersValue,
+QLabel#cardBorrowingValue, QLabel#cardOverdueValue {
+    color: #0f172a;
+    font-size: 28px;
+    font-weight: 700;
+}
+QLabel#cardOverdueValue {
+    color: #ef4444;
 }
 
 /* ================= TABLES ================= */
@@ -139,14 +147,14 @@ QPushButton[objectName$="DeleteBtn"]:hover {
 /* nút phụ -> nền trắng viền xanh */
 QPushButton#editBtn, QPushButton#toggleLockBtn, QPushButton#cancelBtn,
 QPushButton#editBookBtn, QPushButton#editAuthorBtn, QPushButton#editGenreBtn,
-QPushButton#stockOutBtn {
+QPushButton#checkBtn {
     background: #ffffff;
     color: #2563eb;
     border: 1px solid #2563eb;
 }
 QPushButton#editBtn:hover, QPushButton#toggleLockBtn:hover, QPushButton#cancelBtn:hover,
 QPushButton#editBookBtn:hover, QPushButton#editAuthorBtn:hover, QPushButton#editGenreBtn:hover,
-QPushButton#stockOutBtn:hover {
+QPushButton#checkBtn:hover {
     background: #eff6ff;
 }
 

@@ -5,11 +5,12 @@
 #include "NameDialog.h"
 
 #include <QMessageBox>
-#include <QInputDialog>
 
 ManagementPage::ManagementPage(QWidget* parent)
     : QWidget(parent), ui(new Ui::ManagementPage) {
     ui->setupUi(this);
+
+    ui->pageTitle->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
     ui->booksTable->setColumnCount(6);
     ui->booksTable->setHorizontalHeaderLabels(
@@ -40,7 +41,6 @@ ManagementPage::ManagementPage(QWidget* parent)
     connect(ui->addBookBtn, &QPushButton::clicked, this, &ManagementPage::onAddBookClicked);
     connect(ui->editBookBtn, &QPushButton::clicked, this, &ManagementPage::onEditBookClicked);
     connect(ui->deleteBookBtn, &QPushButton::clicked, this, &ManagementPage::onDeleteBookClicked);
-    connect(ui->stockOutBtn, &QPushButton::clicked, this, &ManagementPage::onStockOutClicked);
 
     connect(ui->searchAuthorEdit, &QLineEdit::textChanged,
             this, &ManagementPage::onAuthorSearchChanged);
@@ -196,32 +196,6 @@ void ManagementPage::onDeleteBookClicked() {
         refreshBooks();
     else
         QMessageBox::warning(this, "Lỗi", "Không thể xóa (sách đang có người mượn).");
-}
-
-void ManagementPage::onStockOutClicked() {
-    const int id = selectedBookId();
-    if (id < 0) {
-        QMessageBox::information(this, "Thông báo", "Chọn một sách để xuất kho.");
-        return;
-    }
-    Book* b = g_lib.findBook(id);
-    if (!b)
-        return;
-    const int avail = g_lib.available(id);
-    if (avail <= 0) {
-        QMessageBox::information(this, "Thông báo", "Sách đã cho mượn hết, không thể xuất kho.");
-        return;
-    }
-
-    bool ok = false;
-    const int n = QInputDialog::getInt(this, "Xuất kho",
-        "Số bản xuất ra:", 1, 1, avail, 1, &ok);
-    if (!ok)
-        return;
-
-    b->setAmount(b->getAmount() - n);
-    Book::save(PATH_BOOK, g_lib.books);
-    refreshBooks();
 }
 
 void ManagementPage::onAuthorSearchChanged(const QString&) {

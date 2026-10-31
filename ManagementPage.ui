@@ -61,13 +61,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="stockOutBtn">
-           <property name="text">
-            <string>Xuất kho</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QPushButton" name="editBookBtn">
            <property name="text">
             <string>Sửa</string>

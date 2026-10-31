@@ -28,55 +28,155 @@
       <number>12</number>
      </property>
      <item>
-      <widget class="QPushButton" name="cardBooks">
+      <widget class="QFrame" name="cardBooks">
        <property name="minimumSize">
         <size>
          <width>0</width>
          <height>92</height>
         </size>
        </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
+       <layout class="QVBoxLayout" name="cardBooksLayout">
+        <property name="leftMargin">
+         <number>18</number>
+        </property>
+        <property name="topMargin">
+         <number>12</number>
+        </property>
+        <property name="rightMargin">
+         <number>18</number>
+        </property>
+        <property name="bottomMargin">
+         <number>12</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="cardBooksTitle">
+          <property name="text">
+           <string>Tổng số sách</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="cardBooksValue">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="cardCustomers">
+      <widget class="QFrame" name="cardCustomers">
        <property name="minimumSize">
         <size>
          <width>0</width>
          <height>92</height>
         </size>
        </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
+       <layout class="QVBoxLayout" name="cardCustomersLayout">
+        <property name="leftMargin">
+         <number>18</number>
+        </property>
+        <property name="topMargin">
+         <number>12</number>
+        </property>
+        <property name="rightMargin">
+         <number>18</number>
+        </property>
+        <property name="bottomMargin">
+         <number>12</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="cardCustomersTitle">
+          <property name="text">
+           <string>Khách hàng</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="cardCustomersValue">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="cardBorrowing">
+      <widget class="QFrame" name="cardBorrowing">
        <property name="minimumSize">
         <size>
          <width>0</width>
          <height>92</height>
         </size>
        </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
+       <layout class="QVBoxLayout" name="cardBorrowingLayout">
+        <property name="leftMargin">
+         <number>18</number>
+        </property>
+        <property name="topMargin">
+         <number>12</number>
+        </property>
+        <property name="rightMargin">
+         <number>18</number>
+        </property>
+        <property name="bottomMargin">
+         <number>12</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="cardBorrowingTitle">
+          <property name="text">
+           <string>Đang mượn</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="cardBorrowingValue">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="cardOverdue">
+      <widget class="QFrame" name="cardOverdue">
        <property name="minimumSize">
         <size>
          <width>0</width>
          <height>92</height>
         </size>
        </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
+       <layout class="QVBoxLayout" name="cardOverdueLayout">
+        <property name="leftMargin">
+         <number>18</number>
+        </property>
+        <property name="topMargin">
+         <number>12</number>
+        </property>
+        <property name="rightMargin">
+         <number>18</number>
+        </property>
+        <property name="bottomMargin">
+         <number>12</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="cardOverdueTitle">
+          <property name="text">
+           <string>Quá hạn</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="cardOverdueValue">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
@@ -127,3 +227,4 @@
  <resources/>
  <connections/>
 </ui>
+

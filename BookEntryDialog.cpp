@@ -5,31 +5,30 @@
 #include <QPushButton>
 
 BookEntryDialog::BookEntryDialog(Mode mode, int bookId, QWidget* parent)
-    : QDialog(parent), ui(new Ui::BookEntryDialog), m_mode(mode), m_bookId(bookId) {
+    : QDialog(parent), ui(new Ui::BookEntryDialog),
+      m_mode(mode), m_editBookId(bookId) {
     ui->setupUi(this);
 
     populateAuthors();
+    populateGenres(List<int>());   // luôn nạp danh sách thể loại
 
     if (mode == Mode::New) {
-        setWindowTitle("Nhập sách mới");
+        setWindowTitle("Nhập sách");
         ui->amountLabel->setText("Số lượng:");
         ui->amountSpin->setRange(1, 99999);
         ui->amountSpin->setValue(1);
         ui->nameEdit->setFocus();
-    } else if (mode == Mode::Edit) {
+    } else { // Edit
         setWindowTitle("Sửa sách");
+        ui->checkBtn->setVisible(false);
         ui->amountLabel->setText("Số lượng:");
-        loadBook(bookId);
-    } else { // StockIn
-        setWindowTitle("Thêm bản vào sách");
-        ui->amountLabel->setText("Số bản thêm vào:");
-        ui->amountSpin->setRange(1, 99999);
-        ui->amountSpin->setValue(1);
-        switchToStockIn(bookId);
+        loadBookForEdit(bookId);
     }
 
     connect(ui->nameEdit, &QLineEdit::returnPressed,
             this, &BookEntryDialog::onNameEntered);
+    connect(ui->checkBtn, &QPushButton::clicked,
+            this, &BookEntryDialog::onCheckClicked);
 }
 
 BookEntryDialog::~BookEntryDialog() {
@@ -81,32 +80,50 @@ bool BookEntryDialog::findBookByName(const std::string& name, int* outId) const 
     return false;
 }
 
-void BookEntryDialog::onNameEntered() {
-    if (m_mode != Mode::New)
-        return;
+bool BookEntryDialog::sameGenres(const List<int>& a, const List<int>& b) const {
+    if (a.size() != b.size())
+        return false;
+    for (int i = 0; i < (int)a.size(); ++i) {
+        bool found = false;
+        for (int j = 0; j < (int)b.size(); ++j)
+            if (a[i] == b[j]) { found = true; break; }
+        if (!found)
+            return false;
+    }
+    return true;
+}
+
+void BookEntryDialog::checkName() {
     const std::string name = ss(ui->nameEdit->text().trimmed());
     if (name.empty())
         return;
 
     int foundId = -1;
-    if (!findBookByName(name, &foundId))
-        return;
-
-    QMessageBox box(this);
-    box.setWindowTitle("Sách đã tồn tại");
-    box.setText(QString("Sách \"%1\" đã có trong thư viện.\nBạn muốn làm gì?")
-                    .arg(qs(name)));
-    QPushButton* createBtn = box.addButton("Tạo sách mới", QMessageBox::AcceptRole);
-    QPushButton* addBtn    = box.addButton("Thêm bản vào sách này", QMessageBox::ActionRole);
-    box.addButton("Hủy", QMessageBox::RejectRole);
-    box.exec();
-
-    if (box.clickedButton() == addBtn)
-        switchToStockIn(foundId);
-    // createBtn: giữ nguyên chế độ nhập mới, người dùng tiếp tục điền
+    if (findBookByName(name, &foundId)) {
+        fillFromBook(foundId);
+        ui->amountLabel->setText("Số bản thêm vào:");
+        ui->amountSpin->setRange(1, 99999);
+        ui->amountSpin->setValue(1);
+        ui->hintLabel->setText(
+            QString("Đã tìm thấy sách hiện có (ID %1). Nhập số bản cần thêm.").arg(foundId));
+    } else {
+        ui->amountLabel->setText("Số lượng:");
+        ui->amountSpin->setRange(1, 99999);
+        ui->hintLabel->setText("Không tìm thấy sách trùng tên. Sẽ tạo sách mới.");
+    }
 }
 
-void BookEntryDialog::loadBook(int bookId) {
+void BookEntryDialog::fillFromBook(int bookId) {
+    Book* b = g_lib.findBook(bookId);
+    if (!b)
+        return;
+    int idx = ui->authorCombo->findData(b->getAuthorId());
+    if (idx >= 0)
+        ui->authorCombo->setCurrentIndex(idx);
+    populateGenres(b->getGenreIds());
+}
+
+void BookEntryDialog::loadBookForEdit(int bookId) {
     Book* b = g_lib.findBook(bookId);
     if (!b)
         return;
@@ -121,35 +138,14 @@ void BookEntryDialog::loadBook(int bookId) {
     ui->amountSpin->setValue(b->getAmount());
 }
 
-void BookEntryDialog::switchToStockIn(int bookId) {
-    m_mode = Mode::StockIn;
-    m_bookId = bookId;
-    setWindowTitle("Thêm bản vào sách");
+void BookEntryDialog::onCheckClicked() {
+    checkName();
+}
 
-    Book* b = g_lib.findBook(bookId);
-    if (!b)
+void BookEntryDialog::onNameEntered() {
+    if (m_mode != Mode::New)
         return;
-
-    ui->nameEdit->setText(qs(b->getName()));
-    ui->nameEdit->setReadOnly(true);
-
-    int idx = ui->authorCombo->findData(b->getAuthorId());
-    if (idx >= 0)
-        ui->authorCombo->setCurrentIndex(idx);
-    ui->authorCombo->setEnabled(false);
-
-    populateGenres(b->getGenreIds());
-    ui->genreList->setEnabled(false);
-
-    ui->amountLabel->setText("Số bản thêm vào:");
-    ui->amountSpin->setRange(1, 99999);
-    ui->amountSpin->setValue(1);
-
-    ui->hintLabel->setText(QString("Thêm bản vào sách \"%1\" (hiện có %2 bản).")
-                               .arg(qs(b->getName()))
-                               .arg(b->getAmount()));
-    ui->amountSpin->setFocus();
-    ui->amountSpin->selectAll();
+    checkName();
 }
 
 void BookEntryDialog::accept() {
@@ -158,35 +154,36 @@ void BookEntryDialog::accept() {
     const int amount = ui->amountSpin->value();
     const List<int> genres = selectedGenres();
 
-    if (m_mode == Mode::StockIn) {
-        Book* b = g_lib.findBook(m_bookId);
+    // ---- Sửa sách ----
+    if (m_mode == Mode::Edit) {
+        if (name.empty()) { QMessageBox::warning(this, "Lỗi", "Tên sách không được để trống."); return; }
+        if (authorId < 0)  { QMessageBox::warning(this, "Lỗi", "Vui lòng chọn tác giả."); return; }
+        if (amount <= 0)   { QMessageBox::warning(this, "Lỗi", "Số lượng phải lớn hơn 0."); return; }
+
+        Book* b = g_lib.findBook(m_editBookId);
         if (!b)
             return;
-        b->setAmount(b->getAmount() + amount);
+        if (g_lib.bookExists(name, authorId, m_editBookId)) {
+            QMessageBox::warning(this, "Lỗi", "Sách này đã tồn tại (cùng tên + cùng tác giả).");
+            return;
+        }
+        b->setName(name);
+        b->setAuthorId(authorId);
+        b->setAmount(amount);
+        b->setGenreIds(genres);
         Book::save(PATH_BOOK, g_lib.books);
         QDialog::accept();
         return;
     }
 
-    if (name.empty()) {
-        QMessageBox::warning(this, "Lỗi", "Tên sách không được để trống.");
-        return;
-    }
-    if (authorId < 0) {
-        QMessageBox::warning(this, "Lỗi", "Vui lòng chọn tác giả.");
-        return;
-    }
-    if (amount <= 0) {
-        QMessageBox::warning(this, "Lỗi", "Số lượng phải lớn hơn 0.");
-        return;
-    }
+    // ---- Nhập sách ----
+    if (name.empty()) { QMessageBox::warning(this, "Lỗi", "Tên sách không được để trống."); return; }
+    if (authorId < 0)  { QMessageBox::warning(this, "Lỗi", "Vui lòng chọn tác giả."); return; }
+    if (amount <= 0)   { QMessageBox::warning(this, "Lỗi", "Số lượng phải lớn hơn 0."); return; }
 
-    if (m_mode == Mode::New) {
-        if (g_lib.bookExists(name, authorId)) {
-            QMessageBox::warning(this, "Lỗi",
-                "Sách này đã tồn tại (cùng tên + cùng tác giả).");
-            return;
-        }
+    auto createNew = [&]() -> bool {
+        if (g_lib.bookExists(name, authorId))
+            return false;
         Book b;
         b.setId(nextId(g_lib.books));
         b.setName(name);
@@ -195,25 +192,61 @@ void BookEntryDialog::accept() {
         b.setGenreIds(genres);
         g_lib.books.push_back(b);
         Book::save(PATH_BOOK, g_lib.books);
+        return true;
+    };
+
+    // kiểm tra lại tên ngay tại thời điểm OK
+    int foundId = -1;
+    findBookByName(name, &foundId);
+
+    if (foundId == -1) {
+        if (!createNew())
+            QMessageBox::warning(this, "Lỗi", "Sách này đã tồn tại (cùng tên + cùng tác giả).");
+        else
+            QDialog::accept();
+        return;
+    }
+
+    Book* found = g_lib.findBook(foundId);
+    if (!found) {
+        if (!createNew())
+            QMessageBox::warning(this, "Lỗi", "Sách này đã tồn tại (cùng tên + cùng tác giả).");
+        else
+            QDialog::accept();
+        return;
+    }
+
+    const bool sameAuthor = (authorId == found->getAuthorId());
+    const bool sameGen = sameGenres(genres, found->getGenreIds());
+
+    if (sameAuthor && sameGen) {
+        // không thay đổi thông tin -> chỉ thêm số lượng
+        found->setAmount(found->getAmount() + amount);
+        Book::save(PATH_BOOK, g_lib.books);
         QDialog::accept();
         return;
     }
 
-    // Edit
-    Book* b = g_lib.findBook(m_bookId);
-    if (!b)
-        return;
-    if (g_lib.bookExists(name, authorId, m_bookId)) {
-        QMessageBox::warning(this, "Lỗi",
-            "Sách này đã tồn tại (cùng tên + cùng tác giả).");
-        return;
-    }
-    b->setName(name);
-    b->setAuthorId(authorId);
-    b->setAmount(amount);
-    b->setGenreIds(genres);
-    Book::save(PATH_BOOK, g_lib.books);
-    QDialog::accept();
-}
+    // tác giả / thể loại đã thay đổi -> hỏi lại
+    QMessageBox box(this);
+    box.setWindowTitle("Thông tin đã thay đổi");
+    box.setText("Tác giả / thể loại đã khác với sách hiện có.\nBạn muốn làm gì?");
+    QPushButton* createBtn = box.addButton("Tạo sách mới", QMessageBox::AcceptRole);
+    QPushButton* addBtn    = box.addButton("Thêm vào sách cũ", QMessageBox::ActionRole);
+    box.addButton("Hủy", QMessageBox::RejectRole);
+    box.exec();
 
+    if (box.clickedButton() == addBtn) {
+        // thêm vào sách cũ, giữ nguyên thông tin sách cũ trong data
+        found->setAmount(found->getAmount() + amount);
+        Book::save(PATH_BOOK, g_lib.books);
+        QDialog::accept();
+    } else if (box.clickedButton() == createBtn) {
+        if (!createNew())
+            QMessageBox::warning(this, "Lỗi", "Sách này đã tồn tại (cùng tên + cùng tác giả).");
+        else
+            QDialog::accept();
+    }
+    // Hủy: giữ nguyên dialog để người dùng sửa tiếp
+}
 
