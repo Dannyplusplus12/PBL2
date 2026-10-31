@@ -20,6 +20,11 @@
 *.vcxproj
 *.sln
 
+# Qt Creator / CMake
+build/
+*.user
+CMakeLists.txt.user
+
 # Misc
 Thumbs.db
 Desktop.ini

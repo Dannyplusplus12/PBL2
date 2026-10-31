@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ManagementPage</class>
+ <widget class="QWidget" name="ManagementPage">
+  <layout class="QVBoxLayout" name="pageLayout">
+   <property name="leftMargin">
+    <number>18</number>
+   </property>
+   <property name="topMargin">
+    <number>18</number>
+   </property>
+   <property name="rightMargin">
+    <number>18</number>
+   </property>
+   <property name="bottomMargin">
+    <number>18</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="pageTitle">
+     <property name="text">
+      <string>Quản lý</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="booksTab">
+      <attribute name="title">
+       <string>Sách</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="booksTabLayout">
+       <property name="leftMargin">
+        <number>10</number>
+       </property>
+       <property name="topMargin">
+        <number>10</number>
+       </property>
+       <property name="rightMargin">
+        <number>10</number>
+       </property>
+       <property name="bottomMargin">
+        <number>10</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="booksToolbar">
+         <item>
+          <widget class="QLineEdit" name="searchBookEdit">
+           <property name="placeholderText">
+            <string>Tìm sách hoặc tác giả...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="addBookBtn">
+           <property name="text">
+            <string>➕ Nhập sách</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="stockOutBtn">
+           <property name="text">
+            <string>Xuất kho</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="editBookBtn">
+           <property name="text">
+            <string>Sửa</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="deleteBookBtn">
+           <property name="text">
+            <string>Xóa</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="booksTable"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="authorsTab">
+      <attribute name="title">
+       <string>Tác giả</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="authorsTabLayout">
+       <property name="leftMargin">
+        <number>10</number>
+       </property>
+       <property name="topMargin">
+        <number>10</number>
+       </property>
+       <property name="rightMargin">
+        <number>10</number>
+       </property>
+       <property name="bottomMargin">
+        <number>10</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="authorsToolbar">
+         <item>
+          <widget class="QLineEdit" name="searchAuthorEdit">
+           <property name="placeholderText">
+            <string>Tìm tác giả...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="addAuthorBtn">
+           <property name="text">
+            <string>➕ Thêm</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="editAuthorBtn">
+           <property name="text">
+            <string>Sửa</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="deleteAuthorBtn">
+           <property name="text">
+            <string>Xóa</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="authorsTable"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="genresTab">
+      <attribute name="title">
+       <string>Thể loại</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="genresTabLayout">
+       <property name="leftMargin">
+        <number>10</number>
+       </property>
+       <property name="topMargin">
+        <number>10</number>
+       </property>
+       <property name="rightMargin">
+        <number>10</number>
+       </property>
+       <property name="bottomMargin">
+        <number>10</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="genresToolbar">
+         <item>
+          <widget class="QLineEdit" name="searchGenreEdit">
+           <property name="placeholderText">
+            <string>Tìm thể loại...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="addGenreBtn">
+           <property name="text">
+            <string>➕ Thêm</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="editGenreBtn">
+           <property name="text">
+            <string>Sửa</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="deleteGenreBtn">
+           <property name="text">
+            <string>Xóa</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="genresTable"/>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
+
