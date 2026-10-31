@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QColor>
+#include <QHBoxLayout>
 
 BorrowReturnPage::BorrowReturnPage(QWidget* parent)
     : QWidget(parent), ui(new Ui::BorrowReturnPage) {
@@ -172,15 +173,35 @@ void BorrowReturnPage::fillCustomerTable(int customerId) {
                 st->setForeground(QColor("#dc2626"));
             ui->borrowTable->setItem(row, 4, st);
 
-            QPushButton* btn = new QPushButton("Trả");
             const int bid = bw.getId();
-            connect(btn, &QPushButton::clicked, this, [this, bid]() {
+
+            QWidget* actions = new QWidget(ui->borrowTable);
+            QHBoxLayout* lay = new QHBoxLayout(actions);
+            lay->setContentsMargins(4, 2, 4, 2);
+            lay->setSpacing(6);
+
+            QPushButton* returnBtn = new QPushButton("Trả", actions);
+            QPushButton* renewBtn = new QPushButton("Gia hạn", actions);
+            renewBtn->setObjectName("renewBtn");
+
+            connect(returnBtn, &QPushButton::clicked, this, [this, bid]() {
                 if (g_lib.returnBook(bid, today()))
                     refresh();
                 else
                     QMessageBox::warning(this, "Lỗi", "Không thể trả sách.");
             });
-            ui->borrowTable->setCellWidget(row, 5, btn);
+            connect(renewBtn, &QPushButton::clicked, this, [this, bid]() {
+                if (g_lib.Renew(bid, 5))
+                    refresh();
+                else
+                    QMessageBox::warning(this, "Lỗi",
+                        "Không thể gia hạn (đã gia hạn 1 lần, quá hạn trên 5 ngày hoặc khách đang bị khóa).");
+            });
+
+            lay->addWidget(returnBtn);
+            lay->addWidget(renewBtn);
+            lay->addStretch();
+            ui->borrowTable->setCellWidget(row, 5, actions);
         }
     }
 }

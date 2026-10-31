@@ -1,0 +1,120 @@
+/* ================= GLOBAL ================= */
+* {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px;
+    outline: none;
+}
+QMainWindow, QDialog { background: #ffffff; }
+QWidget#DashboardPage, QWidget#BorrowReturnPage, QWidget#ManagementPage { background: #f8fafc; }
+
+/* ================= TITLE ================= */
+QLabel#pageTitle { font-size: 22px; font-weight: 700; color: #0f172a; padding: 4px 0 2px 0; }
+
+/* ================= SIDEBAR ================= */
+QListWidget#navList {
+    background: #ffffff;
+    border: none;
+    border-left: 1px solid #e2e8f0;
+    padding: 14px 4px;
+    font-size: 15px;
+}
+QListWidget#navList::item { color: #475569; padding: 12px 16px; margin: 3px 8px; border-radius: 10px; }
+QListWidget#navList::item:hover { background: #eef2ff; color: #4f46e5; }
+QListWidget#navList::item:selected { background: #6366f1; color: #ffffff; }
+
+/* ================= CARDS ================= */
+QFrame#cardBooks, QFrame#cardCustomers, QFrame#cardBorrowing, QFrame#cardOverdue {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+}
+QFrame#cardOverdue { border-left: 5px solid #ef4444; }
+QFrame#cardOverdue:hover { background: #fef2f2; }
+QLabel#cardBooksTitle, QLabel#cardCustomersTitle, QLabel#cardBorrowingTitle, QLabel#cardOverdueTitle {
+    color: #64748b;
+    font-size: 13px;
+}
+QLabel#cardBooksValue, QLabel#cardCustomersValue, QLabel#cardBorrowingValue, QLabel#cardOverdueValue {
+    color: #1e293b;
+    font-size: 28px;
+    font-weight: 700;
+}
+QLabel#cardOverdueValue { color: #ef4444; }
+
+/* ================= TABLES ================= */
+QTableWidget {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    gridline-color: #f1f5f9;
+    selection-background-color: #e0e7ff;
+    selection-color: #1e293b;
+}
+QHeaderView::section {
+    background: #f8fafc;
+    padding: 8px;
+    border: none;
+    border-bottom: 1px solid #e2e8f0;
+    font-weight: 600;
+    color: #475569;
+}
+QTableWidget::item { padding: 6px; }
+
+/* ================= LISTS ================= */
+QListWidget { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; }
+QListWidget::item { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
+QListWidget::item:selected { background: #e0e7ff; color: #1e293b; }
+
+/* ================= INPUTS ================= */
+QLineEdit, QSpinBox, QComboBox {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 7px 10px;
+    color: #0f172a;
+}
+QLineEdit:focus, QSpinBox:focus, QComboBox:focus { border: 1px solid #6366f1; }
+QComboBox::drop-down { border: none; width: 22px; }
+
+/* ================= BUTTONS ================= */
+QPushButton {
+    background: #6366f1;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-weight: 600;
+}
+QPushButton:hover { background: #4f46e5; }
+QPushButton:pressed { background: #4338ca; }
+QPushButton:disabled { background: #cbd5e1; color: #f8fafc; }
+
+QPushButton[objectName$="DeleteBtn"] { background: #ef4444; }
+QPushButton[objectName$="DeleteBtn"]:hover { background: #dc2626; }
+
+QPushButton#editBtn, QPushButton#toggleLockBtn, QPushButton#cancelBtn,
+QPushButton#editBookBtn, QPushButton#editAuthorBtn, QPushButton#editGenreBtn,
+QPushButton#checkBtn, QPushButton#renewBtn {
+    background: #ffffff;
+    color: #6366f1;
+    border: 1px solid #6366f1;
+}
+QPushButton#editBtn:hover, QPushButton#toggleLockBtn:hover, QPushButton#cancelBtn:hover,
+QPushButton#editBookBtn:hover, QPushButton#editAuthorBtn:hover, QPushButton#editGenreBtn:hover,
+QPushButton#checkBtn:hover, QPushButton#renewBtn:hover { background: #eef2ff; }
+
+/* ================= TAB ================= */
+QTabWidget::pane { border: 1px solid #e2e8f0; border-radius: 10px; background: #ffffff; }
+QTabBar::tab {
+    background: transparent;
+    padding: 10px 18px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: #64748b;
+    font-weight: 500;
+}
+QTabBar::tab:selected { color: #6366f1; border-bottom: 2px solid #6366f1; }
+QTabBar::tab:hover { color: #0f172a; }
+
+/* ================= SECTION TITLE ================= */
+QLabel#sectionTitle { font-size: 15px; font-weight: 700; color: #334155; }

@@ -2,9 +2,12 @@
 
 Ứng dụng chuyển từ giao diện console sang **Qt 6 Widgets**, dùng **CMake**.
 
-## Cấu trúc
-- Tầng nghiệp vụ (giữ nguyên, không đổi model): `Entity.h`, `Author.h`, `Genre.h`, `Customer.h`, `Book.h`, `Borrow.h`, `List.h`, `DateUtils.h`, `Library.h`.
-- Giao diện Qt (mới): `MainWindow`, `DashboardPage` (Tổng quan), `BorrowReturnPage` (Mượn trả), `ManagementPage` (Quản lý) + các dialog `BookEntryDialog`, `BorrowCartDialog`, `NameDialog`.
+## Cấu trúc thư mục
+- `models/` — các class dữ liệu: `Entity.h`, `Author.h`, `Genre.h`, `Customer.h`, `Book.h`, `Borrow.h`, `List.h`.
+- `backend/` — tầng nghiệp vụ: `Library.h`, `utils.h`, `DateUtils.h`.
+- `frontend/` — giao diện Qt: `main.cpp`, `globals.h`, `MainWindow`, các trang (`DashboardPage`, `BorrowReturnPage`, `ManagementPage`), các dialog (`BookEntryDialog`, `BorrowCartDialog`, `NameDialog`), `styles.qss`, `resources.qrc`.
+- `legacy/` — code console cũ (không dùng cho bản Qt).
+- `Data/` — dữ liệu `.dat`.
 - Mỗi màn hình có file `.ui` tương ứng → mở trong **Qt Creator → Design** để kéo-thả chỉnh sửa.
 
 ## Cách mở & chạy (Qt Creator)

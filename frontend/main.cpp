@@ -2,6 +2,9 @@
 #include <QDir>
 #include <QFile>
 #include <QDebug>
+#include <QPalette>
+#include <QStyleHints>
+#include <QColor>
 
 #include "globals.h"
 #include "MainWindow.h"
@@ -28,6 +31,30 @@ static QString findDataRoot() {
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
     QCoreApplication::setApplicationName("He thong quan ly thu vien");
+
+    // Ép toàn bộ app chạy theme SÁNG, bất chấp Windows có đang bật Dark mode hay không.
+    QApplication::styleHints()->setColorScheme(Qt::ColorScheme::Light);
+    app.setStyle(QStringLiteral("Fusion"));
+    {
+        QPalette p;
+        p.setColor(QPalette::Window,            QColor(248, 250, 252));
+        p.setColor(QPalette::WindowText,        QColor(15, 23, 42));
+        p.setColor(QPalette::Base,              QColor(255, 255, 255));
+        p.setColor(QPalette::AlternateBase,     QColor(248, 250, 252));
+        p.setColor(QPalette::ToolTipBase,       QColor(255, 255, 255));
+        p.setColor(QPalette::ToolTipText,       QColor(15, 23, 42));
+        p.setColor(QPalette::Text,              QColor(15, 23, 42));
+        p.setColor(QPalette::Button,            QColor(255, 255, 255));
+        p.setColor(QPalette::ButtonText,        QColor(15, 23, 42));
+        p.setColor(QPalette::BrightText,        QColor(239, 68, 68));
+        p.setColor(QPalette::Link,              QColor(99, 102, 241));
+        p.setColor(QPalette::Highlight,         QColor(99, 102, 241));
+        p.setColor(QPalette::HighlightedText,   QColor(255, 255, 255));
+        p.setColor(QPalette::PlaceholderText,   QColor(148, 163, 184));
+        p.setColor(QPalette::Disabled, QPalette::Text,        QColor(148, 163, 184));
+        p.setColor(QPalette::Disabled, QPalette::ButtonText,  QColor(148, 163, 184));
+        app.setPalette(p);
+    }
 
     const QString root = findDataRoot();
     if (!root.isEmpty())
