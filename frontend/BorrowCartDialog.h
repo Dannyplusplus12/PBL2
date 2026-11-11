@@ -31,4 +31,6 @@ private:
     void refreshCart();
     int cartTotalCopies() const;
     int currentActiveCopies() const;
+    int remainingBorrowCopies() const;
+    int remainingForSelectedBook() const;
 };

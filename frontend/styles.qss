@@ -28,16 +28,31 @@ QFrame#cardBooks, QFrame#cardCustomers, QFrame#cardBorrowing, QFrame#cardOverdue
     border: 1px solid #e2e8f0;
     border-radius: 14px;
 }
-QFrame#cardOverdue { border-left: 5px solid #ef4444; }
-QFrame#cardOverdue:hover { background: #fef2f2; }
+QFrame#cardBooks, QFrame#cardCustomers, QFrame#cardBorrowing {
+    background: #cbd5e1;
+    border-color: #94a3b8;
+}
+QFrame#cardOverdue {
+    background: #ffffff;
+    border: 2px solid #ef4444;
+    border-left-width: 6px;
+}
+QFrame#cardOverdue:hover { background: #fef2f2; border-color: #dc2626; }
+QFrame#cardOverdue:pressed { background: #fee2e2; }
 QLabel#cardBooksTitle, QLabel#cardCustomersTitle, QLabel#cardBorrowingTitle, QLabel#cardOverdueTitle {
     color: #64748b;
     font-size: 13px;
+}
+QLabel#cardBooksTitle, QLabel#cardCustomersTitle, QLabel#cardBorrowingTitle {
+    color: #334155;
 }
 QLabel#cardBooksValue, QLabel#cardCustomersValue, QLabel#cardBorrowingValue, QLabel#cardOverdueValue {
     color: #1e293b;
     font-size: 28px;
     font-weight: 700;
+}
+QLabel#cardBooksValue, QLabel#cardCustomersValue, QLabel#cardBorrowingValue {
+    color: #334155;
 }
 QLabel#cardOverdueValue { color: #ef4444; }
 

@@ -17,6 +17,9 @@ const string PATH_BORROW   = "Data/Borrow.dat";
 
 class Library {
 public:
+    static constexpr int maxBorrowCopies = 5;
+    static constexpr int maxBorrowDays = 30;
+
     List<Author>   authors;
     List<Genre>    genres;
     List<Customer> customers;
@@ -80,7 +83,7 @@ public:
             if (borrows[i].getCustomerId() == customerId && !borrows[i].isReturned())
                 cnt++;
         }
-        return cnt < 5;
+        return cnt < maxBorrowCopies;
     }
 
     // khóa customer 
@@ -125,7 +128,7 @@ public:
         if (!c || c->isLocked()) return false;
         if (!findBook(bookId)) return false;
         if (available(bookId) <= 0) return false;
-        if (daysBorrowed <= 0 || daysBorrowed > 60) return false;
+        if (daysBorrowed <= 0 || daysBorrowed > maxBorrowDays) return false;
         if (!canBorrow(customerId)) return false;
 
         Borrow bw;

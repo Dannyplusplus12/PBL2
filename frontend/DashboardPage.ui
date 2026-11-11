@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>DashboardPage</class>
  <widget class="QWidget" name="DashboardPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>515</width>
+    <height>400</height>
+   </rect>
+  </property>
   <layout class="QVBoxLayout" name="pageLayout">
    <property name="leftMargin">
     <number>18</number>
@@ -149,6 +157,9 @@
          <height>92</height>
         </size>
        </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
        <layout class="QVBoxLayout" name="cardOverdueLayout">
         <property name="leftMargin">
          <number>18</number>
@@ -212,7 +223,7 @@
    <item>
     <spacer name="vSpacer">
      <property name="orientation">
-      <enum>Qt::Vertical</enum>
+      <enum>Qt::Orientation::Vertical</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
@@ -227,4 +238,3 @@
  <resources/>
  <connections/>
 </ui>
-

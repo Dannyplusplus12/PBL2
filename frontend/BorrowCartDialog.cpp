@@ -10,18 +10,22 @@ BorrowCartDialog::BorrowCartDialog(int customerId, QWidget* parent)
     ui->setupUi(this);
 
     Customer* c = g_lib.findCustomer(customerId);
-    setWindowTitle(c ? QString("Mượn sách — %1").arg(qs(c->getName()))
+    setWindowTitle(c ? QString("Mượn sách — %1 (có thể mượn thêm %2 cuốn)")
+                              .arg(qs(c->getName()))
+                              .arg(remainingBorrowCopies())
                      : QString("Mượn sách"));
 
-    ui->cartTable->setColumnCount(2);
-    ui->cartTable->setHorizontalHeaderLabels(QStringList() << "Sách" << "Số lượng");
+    ui->cartTable->setColumnCount(3);
+    ui->cartTable->setHorizontalHeaderLabels(
+        QStringList() << "Sách" << "Số lượng" << "Thao tác");
     ui->cartTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
     ui->cartTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    ui->cartTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
     ui->cartTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->cartTable->setSelectionMode(QAbstractItemView::NoSelection);
     ui->cartTable->verticalHeader()->setVisible(false);
 
-    ui->daysSpin->setRange(1, 60);
+    ui->daysSpin->setRange(1, Library::maxBorrowDays);
     ui->daysSpin->setValue(5);
 
     if (QPushButton* okBtn = ui->buttonBox->button(QDialogButtonBox::Ok))
@@ -33,6 +37,18 @@ BorrowCartDialog::BorrowCartDialog(int customerId, QWidget* parent)
             this, &BorrowCartDialog::onBookSelected);
     connect(ui->addBtn, &QPushButton::clicked,
             this, &BorrowCartDialog::onAddToCart);
+    connect(ui->qtySpin, QOverload<int>::of(&QSpinBox::valueChanged),
+            this, [this](int value) {
+        if (m_selectedBookId < 0)
+            return;
+        const int maxQty = qMin(g_lib.available(m_selectedBookId),
+                                remainingForSelectedBook());
+        if (value > maxQty) {
+            QMessageBox::warning(this, "Giới hạn mượn",
+                QString("Có thể thêm tối đa %1 cuốn cho lần nhập này.").arg(maxQty));
+            ui->qtySpin->setValue(qMax(1, maxQty));
+        }
+    });
 
     rebuildBookList();
 }
@@ -79,10 +95,11 @@ void BorrowCartDialog::onBookSelected() {
     }
     m_selectedBookId = item->data(Qt::UserRole).toInt();
     const int avail = g_lib.available(m_selectedBookId);
-    ui->qtySpin->setRange(1, avail);
+    const int maxQty = qMin(avail, remainingForSelectedBook());
+    ui->qtySpin->setRange(1, qMax(1, maxQty));
     ui->qtySpin->setValue(1);
-    ui->qtySpin->setEnabled(true);
-    ui->addBtn->setEnabled(true);
+    ui->qtySpin->setEnabled(maxQty > 0);
+    ui->addBtn->setEnabled(maxQty > 0);
 }
 
 void BorrowCartDialog::onAddToCart() {
@@ -95,7 +112,20 @@ void BorrowCartDialog::addToCart(int bookId, int qty) {
     const int avail = g_lib.available(bookId);
     if (avail <= 0)
         return;
-    qty = qMin(qty, avail);
+
+    int existingQty = 0;
+    for (const CartLine& line : m_cart)
+        if (line.bookId == bookId)
+            existingQty = line.qty;
+
+    const int otherTotal = cartTotalCopies() - existingQty;
+    const int allowed = qMin(avail - existingQty,
+                             remainingBorrowCopies() - otherTotal);
+    if (qty > allowed) {
+        QMessageBox::warning(this, "Giới hạn mượn",
+            QString("Khách chỉ có thể mượn thêm %1 cuốn trong giỏ hàng.").arg(qMax(0, allowed)));
+        qty = qMax(0, allowed);
+    }
     if (qty <= 0)
         return;
 
@@ -126,11 +156,25 @@ void BorrowCartDialog::refreshCart() {
         ui->cartTable->setItem(row, 0, new QTableWidgetItem(b ? qs(b->getName()) : "?"));
 
         QSpinBox* spin = new QSpinBox(ui->cartTable);
-        spin->setRange(0, g_lib.available(bookId));
+        const int otherTotal = cartTotalCopies() - qty;
+        const int maxQty = qMin(g_lib.available(bookId),
+                                qMax(0, remainingBorrowCopies() - otherTotal));
+        spin->setRange(0, maxQty);
         spin->setValue(qty);
         const int idx = i;
         connect(spin, QOverload<int>::of(&QSpinBox::valueChanged),
                 this, [this, idx](int v) {
+            if (idx >= m_cart.size())
+                return;
+            const int otherTotal = cartTotalCopies() - m_cart[idx].qty;
+            const int allowed = qMin(g_lib.available(m_cart[idx].bookId),
+                                     qMax(0, remainingBorrowCopies() - otherTotal));
+            if (v > allowed) {
+                QMessageBox::warning(this, "Giới hạn mượn",
+                    QString("Tổng số sách trong giỏ không được vượt quá %1 cuốn.")
+                        .arg(remainingBorrowCopies()));
+                v = allowed;
+            }
             if (v <= 0)
                 m_cart.removeAt(idx);
             else
@@ -138,6 +182,15 @@ void BorrowCartDialog::refreshCart() {
             refreshCart();
         });
         ui->cartTable->setCellWidget(row, 1, spin);
+
+        QPushButton* removeBtn = new QPushButton("Xóa", ui->cartTable);
+        connect(removeBtn, &QPushButton::clicked, this, [this, idx]() {
+            if (idx >= m_cart.size())
+                return;
+            m_cart.removeAt(idx);
+            refreshCart();
+        });
+        ui->cartTable->setCellWidget(row, 2, removeBtn);
     }
 }
 
@@ -157,6 +210,18 @@ int BorrowCartDialog::currentActiveCopies() const {
     return n;
 }
 
+int BorrowCartDialog::remainingBorrowCopies() const {
+    return qMax(0, Library::maxBorrowCopies - currentActiveCopies());
+}
+
+int BorrowCartDialog::remainingForSelectedBook() const {
+    int existingQty = 0;
+    for (const CartLine& line : m_cart)
+        if (line.bookId == m_selectedBookId)
+            existingQty = line.qty;
+    return qMax(0, remainingBorrowCopies() - cartTotalCopies() + existingQty);
+}
+
 void BorrowCartDialog::accept() {
     Customer* c = g_lib.findCustomer(m_customerId);
     if (!c) {
@@ -174,10 +239,11 @@ void BorrowCartDialog::accept() {
 
     const int days = ui->daysSpin->value();
     const int total = cartTotalCopies();
-    const int maxAllowed = 5 - currentActiveCopies();
+    const int maxAllowed = remainingBorrowCopies();
     if (total > maxAllowed) {
         QMessageBox::warning(this, "Lỗi",
-            QString("Khách chỉ được mượn tối đa 5 cuốn cùng lúc (có thể mượn thêm %1 cuốn).")
+            QString("Khách chỉ được mượn tối đa %1 cuốn cùng lúc (có thể mượn thêm %2 cuốn).")
+                .arg(Library::maxBorrowCopies)
                 .arg(maxAllowed));
         return;
     }
