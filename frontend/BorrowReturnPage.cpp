@@ -7,6 +7,9 @@
 #include <QColor>
 #include <QHBoxLayout>
 
+#include <algorithm>
+#include <vector>
+
 BorrowReturnPage::BorrowReturnPage(QWidget* parent)
     : QWidget(parent), ui(new Ui::BorrowReturnPage) {
     ui->setupUi(this);
@@ -145,10 +148,21 @@ void BorrowReturnPage::showDetail(int customerId) {
 void BorrowReturnPage::fillCustomerTable(int customerId) {
     ui->borrowTable->setRowCount(0);
 
-    for (int i = 0; i < (int)g_lib.borrows.size(); ++i) {
-        const Borrow& bw = g_lib.borrows[i];
-        if (bw.getCustomerId() != customerId)
-            continue;
+    std::vector<int> borrowIndexes;
+    for (int i = 0; i < (int)g_lib.borrows.size(); ++i)
+        if (g_lib.borrows[i].getCustomerId() == customerId)
+            borrowIndexes.push_back(i);
+
+    std::sort(borrowIndexes.begin(), borrowIndexes.end(), [](int left, int right) {
+        const Borrow& leftBorrow = g_lib.borrows[left];
+        const Borrow& rightBorrow = g_lib.borrows[right];
+        if (leftBorrow.getBorrowDate() != rightBorrow.getBorrowDate())
+            return leftBorrow.getBorrowDate() > rightBorrow.getBorrowDate();
+        return leftBorrow.getId() > rightBorrow.getId();
+    });
+
+    for (const int index : borrowIndexes) {
+        const Borrow& bw = g_lib.borrows[index];
         Book* b = g_lib.findBook(bw.getBookId());
 
         const int row = ui->borrowTable->rowCount();

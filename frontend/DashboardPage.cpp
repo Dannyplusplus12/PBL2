@@ -8,8 +8,12 @@ DashboardPage::DashboardPage(QWidget* parent)
     ui->pageTitle->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
     ui->cardOverdue->installEventFilter(this);
+    ui->cardBorrowing->installEventFilter(this);
     ui->cardOverdueTitle->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui->cardOverdueValue->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui->cardBorrowingTitle->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui->cardBorrowingValue->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui->cardBorrowing->setCursor(Qt::PointingHandCursor);
     ui->cardOverdue->setCursor(Qt::PointingHandCursor);
 
     ui->overdueSection->setVisible(false);
@@ -27,17 +31,38 @@ DashboardPage::~DashboardPage() {
 
 void DashboardPage::refresh() {
     refreshCards();
-    refreshOverdueTable();
+    refreshBorrowTable();
+}
+
+void DashboardPage::onBorrowingClicked() {
+    if (m_detailsVisible && !m_showingOverdue) {
+        m_detailsVisible = false;
+    } else {
+        m_detailsVisible = true;
+        m_showingOverdue = false;
+    }
+    ui->overdueSection->setVisible(m_detailsVisible);
+    if (m_detailsVisible)
+        refreshBorrowTable();
 }
 
 void DashboardPage::onOverdueClicked() {
-    m_overdueVisible = !m_overdueVisible;
-    ui->overdueSection->setVisible(m_overdueVisible);
-    if (m_overdueVisible)
-        refreshOverdueTable();
+    if (m_detailsVisible && m_showingOverdue) {
+        m_detailsVisible = false;
+    } else {
+        m_detailsVisible = true;
+        m_showingOverdue = true;
+    }
+    ui->overdueSection->setVisible(m_detailsVisible);
+    if (m_detailsVisible)
+        refreshBorrowTable();
 }
 
 bool DashboardPage::eventFilter(QObject* watched, QEvent* event) {
+    if (watched == ui->cardBorrowing && event->type() == QEvent::MouseButtonPress) {
+        onBorrowingClicked();
+        return true;
+    }
     if (watched == ui->cardOverdue && event->type() == QEvent::MouseButtonPress) {
         onOverdueClicked();
         return true;
@@ -65,8 +90,13 @@ void DashboardPage::refreshCards() {
     ui->cardOverdueValue->setText(QString::number(overdue));
 }
 
-void DashboardPage::refreshOverdueTable() {
+void DashboardPage::refreshBorrowTable() {
     ui->overdueTable->setRowCount(0);
+    const bool overdueOnly = m_showingOverdue;
+    ui->sectionTitle->setText(overdueOnly ? "Khách hàng quá hạn" : "Khách hàng đang mượn");
+    ui->overdueTable->setHorizontalHeaderLabels(
+        QStringList() << "Khách hàng" << "Số điện thoại"
+                      << (overdueOnly ? "Sách quá hạn" : "Sách đang mượn"));
 
     for (int ci = 0; ci < (int)g_lib.customers.size(); ++ci) {
         const int cid = g_lib.customers[ci].getId();
@@ -76,12 +106,18 @@ void DashboardPage::refreshOverdueTable() {
             const Borrow& bw = g_lib.borrows[bi];
             if (bw.getCustomerId() != cid || bw.isReturned())
                 continue;
-            if (!isOverdue(bw.getDueDate()))
+            if (overdueOnly != isOverdue(bw.getDueDate()))
                 continue;
             Book* b = g_lib.findBook(bw.getBookId());
-            books << QString("%1 (quá %2 ngày)")
-                        .arg(b ? qs(b->getName()) : QString("?"))
-                        .arg(overdueDays(bw.getDueDate()));
+            if (overdueOnly) {
+                books << QString("%1 (quá %2 ngày)")
+                            .arg(b ? qs(b->getName()) : QString("?"))
+                            .arg(overdueDays(bw.getDueDate()));
+            } else {
+                books << QString("%1 (Còn %2 ngày)")
+                            .arg(b ? qs(b->getName()) : QString("?"))
+                            .arg(daysUntil(bw.getDueDate()));
+            }
         }
 
         if (books.isEmpty())

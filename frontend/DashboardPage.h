@@ -16,12 +16,14 @@ protected:
     bool eventFilter(QObject* watched, QEvent* event) override;
 
 private slots:
+    void onBorrowingClicked();
     void onOverdueClicked();
 
 private:
     Ui::DashboardPage* ui;
-    bool m_overdueVisible = false;
+    bool m_detailsVisible = false;
+    bool m_showingOverdue = false;
 
     void refreshCards();
-    void refreshOverdueTable();
+    void refreshBorrowTable();
 };
